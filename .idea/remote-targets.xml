@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="RemoteTargetsManager">
+    <targets>
+      <target name="root@178.156.206.115:22" type="ssh/sftp" uuid="38459372-5099-433b-a389-d324c48b3c64">
+        <config>
+          <option name="projectRootOnTarget" value="/root/kyber-updater" />
+          <option name="serverName" value="root@178.156.206.115:22 password" />
+        </config>
+        <ContributedStateBase type="GoLanguageRuntime">
+          <config />
+        </ContributedStateBase>
+      </target>
+    </targets>
+  </component>
+</project>
