@@ -43,19 +43,25 @@ kyber-updater [-v] [-c <container_name>] [-f <file_name>] [-d] [-h | --help]
 ### Update using a local `Kyber.dll`
 
 ```bash
-./kyber-updater -c kyber-container -f ~/Kyber.dll
+./kyber-updater -c <container_name> -f /path/to/Kyber.dll
 ```
 
-### Download and install the latest `Kyber.dll`
+### Download and install the latest `Kyber.dll` automatically
 
 ```bash
-./kyber-updater -c kyber-container -d
+./kyber-updater -c <container_name> -d
+```
+
+### Update using a `Kyber.dll` in the same directory
+
+```bash
+./kyber-updater -c <container_name>
 ```
 
 ### Verbose mode
 
 ```bash
-./kyber-updater -c kyber-container -d -v
+./kyber-updater -c <container_name> -d -v
 ```
 
 ---
