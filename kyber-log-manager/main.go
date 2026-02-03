@@ -193,17 +193,40 @@ func main() {
 	for i, file := range logFiles {
 		fmt.Printf("%d) %s\n", i+1, file)
 	}
+	fmt.Println("all) All log files")
+
+	var selectedFiles []string
 
 	// Get selected files from the user
-	fmt.Print("\nSelect log files to extract (e.g. 1, 1-3, 1-3,5): ")
-	selection, _ := reader.ReadString('\n')
-	selection = strings.TrimSpace(selection)
+	for {
+		fmt.Print("\nSelect log files to extract (e.g. 1, 1-3, 1-3,5): ")
+		selection, _ := reader.ReadString('\n')
+		selection = strings.TrimSpace(selection)
 
-	// Gets parsed log files by user selection via a function
-	selectedFiles, err := parseSelection(selection, logFiles)
-	if err != nil {
-		fmt.Println("Invalid selection:", err)
-		os.Exit(1)
+		// Prompts user again if selection is empty
+		if selection == "" {
+			fmt.Println("Selection cannot be empty. Please enter at least one number.")
+			continue
+		}
+
+		// Handle "all" user selection
+		if strings.EqualFold(selection, "all") {
+			selectedFiles = append([]string(nil), logFiles...) // copy slice
+			break
+		}
+
+		// Gets parsed numeric/range log files by user selection via a function
+		// Prompts user again if selection is invalid
+		var err error
+		selectedFiles, err = parseSelection(selection, logFiles)
+		if err != nil {
+			fmt.Println("Invalid selection:", err)
+			fmt.Println("Example: 1, 2-4, 7")
+
+			continue
+		}
+
+		break
 	}
 
 	// User selects destination directory
