@@ -11,6 +11,7 @@ import (
 const imageName = "ghcr.io/armchairdevelopers/kyber-server:latest"
 
 type Config struct {
+	ContainerName        string
 	MaximaEmail          string
 	MaximaPassword       string
 	KyberToken           string
@@ -45,22 +46,24 @@ func main() {
 	cfg.MaximaEmail = promptRequired(reader, "EA account email")
 	cfg.MaximaPassword = promptRequired(reader, "EA account password")
 
-	cfg.KyberToken = promptRequired(reader, "KYBER token")
+	cfg.KyberToken = promptRequired(reader, "Kyber token")
 	cfg.ServerName = promptRequired(reader, "Server name")
-	cfg.ServerDescription = promptOptional(reader, "Server description (optional)")
-	cfg.ServerPassword = promptOptional(reader, "Server password (optional)")
+	cfg.ServerDescription = promptOptional(reader, "Server description (optional, leave blank for none)")
+	cfg.ServerPassword = promptOptional(reader, "Server password (optional, leave blank for none)")
 	cfg.MaxPlayers = promptRequired(reader, "Max players")
 	cfg.MapRotation = promptRequired(reader, "Map rotation BASE64 string")
 
-	module := promptOptional(reader, "Module channel (default: main)")
+	module := promptOptional(reader, "Kyber module channel (default: main)")
 	if module != "" {
 		cfg.ModuleChannel = module
 	}
 
 	cfg.GameDataPath = promptRequired(reader, "Path to game data on host")
 
-	cfg.ModFolderPath = promptOptional(reader, "Path to mod folder on host (optional)")
-	cfg.PluginFolderPath = promptOptional(reader, "Path to plugin folder on host (optional)")
+	cfg.ModFolderPath = promptOptional(reader, "Path to mod folder on host (leave blank if not using mods)")
+	cfg.PluginFolderPath = promptOptional(reader, "Path to plugin folder on host (leave blank if not using plugins)")
+
+	cfg.ContainerName = promptContainerName(reader, "Docker container name (no spaces, use - or _)")
 
 	cfg.RestartUnlessStopped = promptYesNo(reader, "Automatically restart container unless stopped? (y/n)")
 
@@ -100,6 +103,8 @@ func buildDockerCommand(cfg Config) string {
 	var parts []string
 
 	parts = append(parts, "docker run -it")
+
+	parts = append(parts, "--name", cfg.ContainerName)
 
 	if cfg.RestartUnlessStopped {
 		parts = append(parts, "--restart=unless-stopped")
@@ -204,6 +209,36 @@ func promptYesNo(reader *bufio.Reader, label string) bool {
 		default:
 			fmt.Println("Please enter y or n.")
 		}
+	}
+}
+
+func promptContainerName(reader *bufio.Reader, label string) string {
+	for {
+		fmt.Print(label + ": ")
+		text, _ := reader.ReadString('\n')
+		text = strings.TrimSpace(text)
+
+		if text == "" {
+			fmt.Println("Container name is required.")
+			continue
+		}
+
+		if strings.Contains(text, " ") {
+			fmt.Println("Container name cannot contain spaces. Use '-', '_', or '.' instead.")
+			continue
+		}
+
+		for _, r := range text {
+			if !(r >= 'a' && r <= 'z' ||
+				r >= '0' && r <= '9' ||
+				r == '-' || r == '_' || r == '.') {
+				fmt.Println("Container name must be lowercase and may only contain a-z, 0-9, '-', '_' and '.'")
+				goto retry
+			}
+		}
+
+		return text
+	retry:
 	}
 }
 
