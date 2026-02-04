@@ -4,7 +4,7 @@ A collection of linux command line tools written in Go to assist in the creation
 
 ## CLI Tools
 
-| Plugin                                                | Description                                                                                      |
+| Tool                                                  | Description                                                                                      |
 |-------------------------------------------------------|--------------------------------------------------------------------------------------------------|
 | [Kyber Server Launcher](#Kyber-Server-Launcher)       | An interactive Linux CLI tool for creating and running a **Kyber dedicated server** using Docker |
 | [Kyber Server Log Manager](#Kyber-Server-Log-Manager) | A simple, interactive **CLI tool** for extracting Kyber dedicated server `.log` files            |
