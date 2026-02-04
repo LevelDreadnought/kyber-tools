@@ -1,107 +1,14 @@
-# kyber-tools
+# Kyber Dedicated Server Tools
 
+A collection of linux command line tools to assist in the creation and administration of Kyber dedicated servers via the official Kyber Docker container.
 
-# Kyber Module Updater
+## CLI Tools
 
-`kyber-updater` is a small linux CLI tool written in Go designed to update **Kyber module files** inside an existing dedicated server Docker container.
-It can either:
-
-* Copy a **local file** from the host into the container, or
-* **Download the latest Kyber.dll** and install it automatically.
-
-After updating the file, the tool restarts the Docker container to apply changes.
-
-## Requirements
-
-* **Docker** installed and available in `PATH`
-* A **running or stopped container** that already exists
-* Go **1.20+** (only required if building from source)
-
----
-
-## Usage
-
-```bash
-kyber-updater [-v] [-c <container_name>] [-f <file_name>] [-d] [-h | --help]
-```
-
-### Options
-
-|     Flag | Description                                                   |
-| -------: | ------------------------------------------------------------- |
-|     `-c` | **(Required)** Docker container name                          |
-|     `-f` | Input file to copy into the container (default: `Kyber.dll`)  |
-|     `-d` | Download the latest `Kyber.dll` instead of using a local file |
-|     `-v` | Enable verbose output                                         |
-|     `-h` | Show help message                                             |
-| `--help` | Show help message                                             |
-
----
-
-## Examples
-
-### Update using a local `Kyber.dll`
-
-```bash
-./kyber-updater -c <container_name> -f /path/to/Kyber.dll
-```
-
-### Download and install the latest `Kyber.dll` automatically
-
-```bash
-./kyber-updater -c <container_name> -d
-```
-
-### Update using a `Kyber.dll` in the same directory
-
-```bash
-./kyber-updater -c <container_name>
-```
-
-### Verbose mode
-
-```bash
-./kyber-updater -c <container_name> -d -v
-```
-
----
-
-
-## Behavior Details
-
-### File Handling
-
-* The existing file inside the container is renamed to:
-
-  ```
-  <filename>.old
-  ```
-* The new file is copied into:
-
-  ```
-  /root/.local/share/kyber/module/
-  ```
-
-### Container Restart
-
-After the file is updated, the container is automatically restarted:
-
-```bash
-docker restart <container_name>
-```
-
----
-
-## Error Handling
-
-The program will exit with a clear error message if:
-
-* Docker is not installed
-* The container does not exist
-* `-f` and `-d` are used together
-* An invalid file is passed with `-f`
-* The local file does not exist
-* Docker commands fail
+| Plugin                                                | Description                                                                                      |
+|-------------------------------------------------------|--------------------------------------------------------------------------------------------------|
+| [Kyber Server Launcher](#Kyber-Server-Launcher)       | An interactive Linux CLI tool for creating and running a **Kyber dedicated server** using Docker |
+| [Kyber Server Log Manager](#Kyber-Server-Log-Manager) | A simple, interactive **CLI tool** for extracting Kyber dedicated server `.log` files            |
+| [Kyber Module Updater](#Kyber-Module-Updater)         | A small CLI tool designed to update **Kyber module files** inside an existing dedicated server   |
 
 ---
 
@@ -216,6 +123,233 @@ docker run -it \
 * The tool does **not** manage existing containers — name collisions will fail normally via Docker
 
 ---
+
+# Kyber Server Log Manager
+
+A simple, interactive **Go CLI tool** for extracting Kyber dedicated server `.log` files from a running Docker container.
+
+This tool is designed to make log retrieval easier: it detects Docker, validates containers, lists available log files, and lets you selectively (or fully) copy them to your local machine.
+
+---
+
+## Features
+
+* Verifies Docker is installed
+* Confirms the container exists *and* is running
+* Lists all `.log` files inside the Kyber server container
+* Supports flexible selection:
+
+  * Single file (`1`)
+  * Multiple files (`1,3,5`)
+  * Ranges (`2-6`)
+  * Everything (`all`)
+* Copies logs to:
+
+  * Current working directory, or
+  * Any custom destination directory
+* Robust error handling and clear prompts
+
+---
+
+## Requirements
+
+* **Docker** installed and available in your `PATH`
+* A **running Kyber dedicated server container**
+
+> ⚠️ You will need to be in the `docker` group or run this tool with `sudo`.
+
+---
+
+## How It Works
+
+The tool connects to a running Docker container and looks for log files in the **Kyber log directory**:
+
+```
+/root/.local/share/maxima/wine/prefix/drive_c/users/root/AppData/Roaming/ArmchairDevelopers/Kyber/Logs
+```
+
+Once found, you’re prompted to choose which logs to extract, and where to save them on your host system.
+
+---
+
+## Usage
+
+Run the program from your terminal:
+
+```bash
+./kyber-log-manager
+```
+
+### Example Session
+
+1. **Enter the container name**
+
+   ```
+   Enter container name: kyber-server
+   ```
+
+2. **Select log files**
+
+   ```
+   Log files found:
+   1) kyber-server_2026-01-30.log
+   2) kyber-server_2026-01-31.log
+   3) kyber-server_2026-02-01.log
+   all) All log files
+   
+   Select log files to extract (e.g. 1, 1-3, 1-3,5): 1-2
+   ```
+
+3. **Choose destination directory**
+
+   ```
+   Destination directory (leave empty for current directory): ./logs
+   ```
+
+4. Logs are copied using `docker cp` and saved locally.
+
+   ```
+   Copied kyber-server_2026-01-30.log
+   Copied kyber-server_2026-01-31.log
+
+   Done.
+   ```
+
+---
+
+## Error Handling
+
+The program will exit if:
+
+* Docker is not installed
+* The container name is empty
+* The container does not exist
+* The container exists but is not running
+* No `.log` files are found
+
+Clear error messages are printed with actionable guidance.
+
+---
+
+## Why This Exists
+
+This tool was built to simplify Kyber server administration—especially when logs live deep inside Wine paths in the Kyber Docker container. No manual Docker commands are required which simplifies log retrieval.
+
+---
+
+## Notes
+
+* Logs are copied, not moved or deleted
+* Duplicate selections are automatically ignored
+* Destination directories are created if missing
+
+---
+
+# Kyber Module Updater
+
+`kyber-updater` is a small linux CLI tool written in Go designed to update **Kyber module files** inside an existing dedicated server Docker container.
+It can either:
+
+* Copy a **local file** from the host into the container, or
+* **Download the latest Kyber.dll** and install it automatically.
+
+After updating the file, the tool restarts the Docker container to apply changes.
+
+## Requirements
+
+* **Docker** installed and available in `PATH`
+* A **running or stopped container** that already exists
+* Go **1.20+** (only required if building from source)
+
+---
+
+## Usage
+
+```bash
+kyber-updater [-v] [-c <container_name>] [-f <file_name>] [-d] [-h | --help]
+```
+
+### Options
+
+|     Flag | Description                                                   |
+| -------: | ------------------------------------------------------------- |
+|     `-c` | **(Required)** Docker container name                          |
+|     `-f` | Input file to copy into the container (default: `Kyber.dll`)  |
+|     `-d` | Download the latest `Kyber.dll` instead of using a local file |
+|     `-v` | Enable verbose output                                         |
+|     `-h` | Show help message                                             |
+| `--help` | Show help message                                             |
+
+---
+
+## Examples
+
+### Update using a local `Kyber.dll`
+
+```bash
+./kyber-updater -c <container_name> -f /path/to/Kyber.dll
+```
+
+### Download and install the latest `Kyber.dll` automatically
+
+```bash
+./kyber-updater -c <container_name> -d
+```
+
+### Update using a `Kyber.dll` in the same directory
+
+```bash
+./kyber-updater -c <container_name>
+```
+
+### Verbose mode
+
+```bash
+./kyber-updater -c <container_name> -d -v
+```
+
+---
+
+
+## Behavior Details
+
+### File Handling
+
+* The existing file inside the container is renamed to:
+
+  ```
+  <filename>.old
+  ```
+* The new file is copied into:
+
+  ```
+  /root/.local/share/kyber/module/
+  ```
+
+### Container Restart
+
+After the file is updated, the container is automatically restarted:
+
+```bash
+docker restart <container_name>
+```
+
+---
+
+## Error Handling
+
+The program will exit with a clear error message if:
+
+* Docker is not installed
+* The container does not exist
+* `-f` and `-d` are used together
+* An invalid file is passed with `-f`
+* The local file does not exist
+* Docker commands fail
+
+---
+
+
 
 
 
