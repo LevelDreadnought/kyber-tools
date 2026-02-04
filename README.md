@@ -1,6 +1,6 @@
 # Kyber Dedicated Server Tools
 
-A collection of linux command line tools written in Go to assist in the creation and administration of Kyber dedicated servers via the official Kyber Docker container.
+A collection of linux command line tools written in Go to assist in the creation and administration of Kyber dedicated servers with the official Kyber Docker container.
 
 ## CLI Tools
 
