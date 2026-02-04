@@ -18,8 +18,6 @@ An interactive Linux CLI tool for creating and running a **Kyber dedicated serve
 
 This tool walks you through all required configuration options, then generates a valid `docker run` command for the official Kyber server image. You can choose to run the command immediately, save it to a file, or simply print it to the command line.
 
----
-
 ## Features
 
 * Interactive, guided setup (no Docker command memorization required)
@@ -30,17 +28,13 @@ This tool walks you through all required configuration options, then generates a
 * Save generated commands as executable scripts
 * Print-only mode for inspection or manual use
 
----
-
 ## Requirements
 
 * **Linux**
 * **Docker** installed and available in `$PATH`
 * Go **1.20+** (only required to build)
 
-> ⚠️ You will need to be in the `docker` group or run this tool with `sudo`.
-
----
+> ⚠️ If running or saving the generated Docker command, you will need or run this tool with `sudo`.
 
 ## What this Tool Does
 
@@ -68,8 +62,6 @@ The program will prompt you for:
 
 Based on your answers, it generates a valid `docker run` command for the Kyber dedicated server image.
 
----
-
 ## Docker Container Naming Rules
 
 The Docker container name **must**:
@@ -82,8 +74,6 @@ The Docker container name **must**:
   * `0–9`
   * `-` `_` `.`
 
----
-
 ## Output Options
 
 After configuration, you can choose one of the following:
@@ -94,8 +84,6 @@ After configuration, you can choose one of the following:
 4. **Print the command only**
 
 Saved Docker command files are automatically marked executable.
-
----
 
 ## Example Generated Command
 
@@ -113,8 +101,6 @@ docker run -it \
   ghcr.io/armchairdevelopers/kyber-server:latest
 ```
 
----
-
 ## Notes & Tips
 
 * Mod and plugin environment variables are **only added if their volume paths are set**
@@ -130,7 +116,6 @@ A simple, interactive **Go CLI tool** for extracting Kyber dedicated server `.lo
 
 This tool is designed to make log retrieval easier: it detects Docker, validates containers, lists available log files, and lets you selectively (or fully) copy them to your local machine.
 
----
 
 ## Features
 
@@ -149,7 +134,6 @@ This tool is designed to make log retrieval easier: it detects Docker, validates
   * Any custom destination directory
 * Robust error handling and clear prompts
 
----
 
 ## Requirements
 
@@ -158,7 +142,6 @@ This tool is designed to make log retrieval easier: it detects Docker, validates
 
 > ⚠️ You will need to be in the `docker` group or run this tool with `sudo`.
 
----
 
 ## How It Works
 
@@ -170,7 +153,6 @@ The tool connects to a running Docker container and looks for log files in the *
 
 Once found, you’re prompted to choose which logs to extract, and where to save them on your host system.
 
----
 
 ## Usage
 
@@ -215,7 +197,6 @@ Run the program from your terminal:
    Done.
    ```
 
----
 
 ## Error Handling
 
@@ -229,13 +210,11 @@ The program will exit if:
 
 Clear error messages are printed with actionable guidance.
 
----
 
 ## Why This Exists
 
 This tool was built to simplify Kyber server administration—especially when logs live deep inside Wine paths in the Kyber Docker container. No manual Docker commands are required which simplifies log retrieval.
 
----
 
 ## Notes
 
@@ -260,8 +239,8 @@ After updating the file, the tool restarts the Docker container to apply changes
 * **Docker** installed and available in `PATH`
 * A **running or stopped container** that already exists
 * Go **1.20+** (only required if building from source)
+> ⚠️ You will need to be in the `docker` group or run this tool with `sudo`.
 
----
 
 ## Usage
 
@@ -280,7 +259,6 @@ kyber-updater [-v] [-c <container_name>] [-f <file_name>] [-d] [-h | --help]
 |     `-h` | Show help message                                             |
 | `--help` | Show help message                                             |
 
----
 
 ## Examples
 
@@ -308,8 +286,6 @@ kyber-updater [-v] [-c <container_name>] [-f <file_name>] [-d] [-h | --help]
 ./kyber-updater -c <container_name> -d -v
 ```
 
----
-
 
 ## Behavior Details
 
@@ -334,7 +310,6 @@ After the file is updated, the container is automatically restarted:
 docker restart <container_name>
 ```
 
----
 
 ## Error Handling
 
